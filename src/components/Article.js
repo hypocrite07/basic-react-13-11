@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import ArticleCommentList from './ArticleCommentList'
 
 class Article extends Component {
     constructor(props) {
@@ -32,6 +33,8 @@ class Article extends Component {
     render() {
         const {article} = this.props
         const body = this.state.isOpen && <section>{article.text}</section>
+        const {comments} = article
+
         return (
             <div>
                 <h2>
@@ -42,6 +45,7 @@ class Article extends Component {
                 </h2>
                 {body}
                 <h3>creation date: {(new Date(article.date)).toDateString()}</h3>
+                { this.state.isOpen && <ArticleCommentList comments={comments} defaultOpen={false}/> }
             </div>
         )
     }
