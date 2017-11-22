@@ -1,55 +1,66 @@
-import React, {Component} from 'react'
+import React, {Component, PureComponent} from 'react'
+import CommentList from './CommentList'
+import PropTypes from 'prop-types'
 
-class Article extends Component {
+class Article extends PureComponent {
+    static propTypes = {
+        article: PropTypes.shape({
+            title: PropTypes.string.isRequired,
+            text: PropTypes.string,
+            comments: PropTypes.array
+        }).isRequired,
+        isOpen: PropTypes.bool,
+        toggleOpen: PropTypes.func
+    }
+
     constructor(props) {
         super(props)
 
         this.state = {
-            isOpen: props.defaultOpen
+            error: null
         }
     }
-
-    componentWillMount() {
-        console.log('---', 1)
-    }
-
-    componentDidMount() {
-        console.log('---', 2)
-    }
-
     componentWillReceiveProps(nextProps) {
-        console.log('---', 'receive props :(((')
-
         if (nextProps.defaultOpen !== this.props.defaultOpen) this.setState({
             isOpen: nextProps.defaultOpen
         })
     }
 
-    componentWillUpdate() {
-        console.log('---', 'will update')
+    componentDidCatch(err) {
+        this.setState({
+            error: 'can`t display an article'
+        })
     }
+/*
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return !Object.keys(nextProps).every(prop => this.props[prop] === nextProps[prop])
+    }
+*/
 
     render() {
-        const {article} = this.props
-        const body = this.state.isOpen && <section>{article.text}</section>
+        console.log('---', 'rendering article')
+        if (this.state.error) return <h1>{this.state.error}</h1>
+
+        const {article, isOpen, toggleOpen} = this.props
+        const body = isOpen && (
+            <div>
+                <section>{article.text}</section>
+                <CommentList comments = {article.comments}/>
+            </div>
+        )
         return (
             <div>
                 <h2>
                     {article.title}
-                    <button onClick={this.handleClick}>
-                        {this.state.isOpen ? 'close' : 'open'}
+                    <button onClick={() => toggleOpen(article.id)}>
+                        {isOpen ? 'close' : 'open'}
                     </button>
                 </h2>
                 {body}
                 <h3>creation date: {(new Date(article.date)).toDateString()}</h3>
             </div>
         )
-    }
-
-    handleClick = () => {
-        this.setState({
-            isOpen: !this.state.isOpen
-        })
     }
 }
 
