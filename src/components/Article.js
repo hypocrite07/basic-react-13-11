@@ -1,25 +1,14 @@
 import React, {Component, PureComponent} from 'react'
 import CommentList from './CommentList'
 import PropTypes from 'prop-types'
+import ToggleTrait from '../decorators/ToggleOpenTrait'
 
-class Article extends PureComponent {
-    static propTypes = {
-        article: PropTypes.shape({
-            title: PropTypes.string.isRequired,
-            text: PropTypes.string,
-            comments: PropTypes.array
-        }).isRequired,
-        isOpen: PropTypes.bool,
-        toggleOpen: PropTypes.func
-    }
+class Article extends ToggleTrait {
 
     constructor(props) {
         super(props)
-
-        this.state = {
-            error: null
-        }
     }
+
     componentWillReceiveProps(nextProps) {
         if (nextProps.defaultOpen !== this.props.defaultOpen) this.setState({
             isOpen: nextProps.defaultOpen
@@ -62,6 +51,18 @@ class Article extends PureComponent {
             </div>
         )
     }
+}
+
+Article.propTypes = {
+    article: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        title: PropTypes.string.isRequired,
+        text: PropTypes.string,
+        comments: PropTypes.array,
+        date: PropTypes.string.isRequired
+    }),
+    isOpen: PropTypes.bool,
+    toggleOpen: PropTypes.func
 }
 
 
