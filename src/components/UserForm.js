@@ -1,30 +1,45 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { APPLY_ARTICLE_FILTER_BY_USER } from '../constants'
+import {connect} from 'react-redux'
+import { filterArticlesByUserName, retrieveArticleByFilter } from '../AC'
 
 class UserForm extends Component {
     static propTypes = {
 
     };
 
-    state = {
-        user: ''
-    }
-
     handleChange = ev => {
         const {value} = ev.target
-        this.setState({
-            user: value.length < 15 ? value : ''
-        })
+        const payload = {...this.props}
+        payload.user = value
+        this.props.handleChange(payload)
+    }
+
+    componentWillReceiveProps(nextProps, state) {
+        console.log(nextProps)
+        this.props.filterArticles(nextProps)
     }
 
     render() {
-        console.log('---', this.state)
         return (
             <div>
-                Username: <input value = {this.state.user} onChange = {this.handleChange} />
+                Username: <input value = {this.props.user} onChange = {this.handleChange} />
             </div>
         )
     }
 }
 
-export default UserForm
+const mapStateToProps = (state) => ({
+    dateFrom: state.filters.dateFrom,
+    dateTo: state.filters.dateTo,
+    selected: state.filters.selected,
+    user: state.filters.user
+})
+
+const mapDispatchToProps = {
+    handleChange: filterArticlesByUserName,
+    filterArticles: retrieveArticleByFilter
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserForm)
