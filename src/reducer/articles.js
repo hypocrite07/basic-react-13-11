@@ -8,7 +8,6 @@ export default (articlesState = defaultArticles, action) => {
         case DELETE_ARTICLE:
             return articlesState.filter(article => article.id !== payload.id)
         case RETRIEVE_ARTICLES_BY_FILTER:
-            console.log(payload)
             if (!payload.user && !payload.dateTo && !payload.dateFrom && (!payload.selected || payload.selected.length === 0)) {
                 return defaultArticles
             }
