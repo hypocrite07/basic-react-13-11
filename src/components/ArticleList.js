@@ -9,11 +9,11 @@ class ArticleList extends Accordion {
     render() {
         console.log('---', 2)
         const {articles} = this.props
-        if (!articles.length) return <h3>No Articles</h3>
-        const articleElements = articles.map((article) => <li key={article.id}>
-            <Article article={article}
-                     isOpen={article.id === this.state.openItemId}
-                     toggleOpen={this.toggleOpenItemMemoized(article.id)}
+        if (!Object.keys(articles).length) return <h3>No Articles</h3>
+        const articleElements = Object.keys(articles).map((id) => <li key={id}>
+            <Article article={articles[id]}
+                     isOpen={id === this.state.openItemId}
+                     toggleOpen={this.toggleOpenItemMemoized(id)}
             />
         </li>)
         return (
@@ -30,7 +30,7 @@ ArticleList.defaultProps = {
 }
 
 ArticleList.propTypes = {
-    articles: PropTypes.array.isRequired
+    articles: PropTypes.object.isRequired
 }
 
 export default connect(state => {

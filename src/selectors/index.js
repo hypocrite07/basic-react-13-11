@@ -9,11 +9,21 @@ export const filtratedArticlesSelector = createSelector(articlesSelector, filter
     console.log('---', 1)
     const {selected, dateRange: {from, to}} = filters
 
-    return articles.filter(article => {
-        const published = Date.parse(article.date)
-        return (!selected.length || selected.includes(article.id)) &&
-            (!from || !to || (published > from && published < to))
-    })
+    return Object.values(articles)
+        .filter(article => {
+            const published = Date.parse(article.date)
+            return (!selected.length || selected.includes(article.id)) &&
+                (!from || !to || (published > from && published < to))
+        })
+        .reduce((prev, article) => ({
+            ...prev,
+            [article.id]: article
+        }), {})
+    // return articles.filter(article => {
+    //     const published = Date.parse(article.date)
+    //     return (!selected.length || selected.includes(article.id)) &&
+    //         (!from || !to || (published > from && published < to))
+    // })
 })
 
 export const createCommentSelector = () => createSelector(commentListSelector, idSelector, (comments, id) => {
