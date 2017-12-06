@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import './style.css'
+import {connect} from 'react-redux'
+import {addCommentIntoArticle} from '../../AC'
 
 class CommentForm extends Component {
     static propTypes = {
@@ -25,11 +27,12 @@ class CommentForm extends Component {
     }
 
     handleSubmit = ev => {
-        ev.preventDefault()
-        this.setState({
-            user: '',
-            text: ''
+        const {user, text} = this.state
+        addCommentIntoArticle({
+            user,
+            text
         })
+        ev.preventDefault()
     }
 
     isValidForm = () => ['user', 'text'].every(this.isValidField)
@@ -58,4 +61,14 @@ const limits = {
     }
 }
 
-export default CommentForm
+const createMapStateToProps = () => {
+    const commentSelector = createCommentSelector()
+
+    return (state, ownProps) => ({
+        comment: commentSelector(state, ownProps)
+    })
+}
+
+export default connect(null, {
+    addCommentToArticle: addCommentIntoArticle
+})(CommentForm)

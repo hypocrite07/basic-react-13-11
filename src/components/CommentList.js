@@ -33,10 +33,12 @@ class CommentList extends Component {
             </ul>
         ) : <h3>No comments yet</h3>
 
+        const {articleId} = this.props
+
         return (
             <div>
                 {body}
-                <CommentForm />
+                <CommentForm articleId={articleId}/>
             </div>
         )
     }
