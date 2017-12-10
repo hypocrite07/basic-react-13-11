@@ -3,13 +3,17 @@ import PropTypes from 'prop-types'
 import CommentForm from './CommentForm'
 import Comment from './Comment'
 import toggleOpen from '../decorators/toggleOpen'
+import {connect} from 'react-redux'
+import {loadCommentsByArticle} from './../AC'
+import {commentLoadingSelector, commentsSelector} from './../selectors'
+import Loader from './common/Loader'
 
 class CommentList extends Component {
-    static propTypes = {
-        article: PropTypes.object.isRequired,
-        //from toggleOpen decorator
-        isOpen: PropTypes.bool,
-        toggleOpen: PropTypes.func
+
+    componentWillReceiveProps({isOpen, loading, loadCommentsByArticle}) {
+
+        const {id} = this.props.article
+        if (!this.props.isOpen && isOpen && !loading) loadCommentsByArticle(id)
     }
 
     render() {
@@ -24,12 +28,13 @@ class CommentList extends Component {
     }
 
     getBody() {
-        const {article: { comments, id }, isOpen} = this.props
+        const {article: {id}, isOpen, comments, loading} = this.props
         if (!isOpen) return null
+        if (loading) return <Loader/>
 
         const body = comments.length ? (
             <ul>
-                {comments.map(id => <li key = {id}><Comment id = {id} /></li>)}
+                {comments.map(comment => <li key = {comment.id}><Comment id = {comment.id} /></li>)}
             </ul>
         ) : <h3>No comments yet</h3>
 
@@ -42,5 +47,22 @@ class CommentList extends Component {
     }
 }
 
+CommentList.propTypes = {
+    article: PropTypes.object.isRequired,
+    //from toggleOpen decorator
+    isOpen: PropTypes.bool,
+    toggleOpen: PropTypes.func
+}
 
-export default toggleOpen(CommentList)
+const mapStateToProps = state => {
+    return {
+        comments: commentsSelector(state),
+        loading: commentLoadingSelector(state)
+    }
+}
+
+const mapDispatchToProps = {
+    loadCommentsByArticle
+}
+
+export default connect(mapStateToProps, {loadCommentsByArticle})(toggleOpen(CommentList))
