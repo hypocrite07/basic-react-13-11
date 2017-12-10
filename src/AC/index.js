@@ -75,3 +75,26 @@ export function loadArticleById(id) {
         }, 1000)
     }
 }
+
+// TODO: modify
+export function loadCommentsByArticle(id) {
+    return (dispatch) => {
+        dispatch({
+            type: LOAD_ARTICLE + START,
+            payload: { id }
+        })
+
+        setTimeout(() => {
+            fetch(`/api/article/${id}`)
+                .then(res => res.json())
+                .then(response => dispatch({
+                    type: LOAD_ARTICLE + SUCCESS,
+                    payload: { response, id }
+                }))
+                .catch(error => dispatch({
+                    type: LOAD_ARTICLE + FAIL,
+                    payload: { error, id }
+                }))
+        }, 1000)
+    }
+}
