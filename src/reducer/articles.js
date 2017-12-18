@@ -1,6 +1,7 @@
 import {Record} from 'immutable'
-import { DELETE_ARTICLE, ADD_COMMENT, LOAD_ALL_ARTICLES, LOAD_ARTICLE, START, SUCCESS } from '../constants'
+import { DELETE_ARTICLE, ADD_COMMENT, LOAD_ALL_ARTICLES, LOAD_ARTICLE, LOAD_ARTICLE_COMMENTS, START, SUCCESS } from '../constants'
 import {arrToImmutableMap} from './utils'
+import {FAIL} from "../constants/index";
 
 const ArticleRecord = Record({
     id: null,
@@ -8,6 +9,8 @@ const ArticleRecord = Record({
     text: null,
     date: null,
     loading: false,
+    commentsLoading: false,
+    commentsLoaded: false,
     comments: []
 })
 
@@ -34,14 +37,25 @@ export default (articles = new ReducerRecord(), action) => {
         case LOAD_ALL_ARTICLES + SUCCESS:
             return articles
                 .set('loading', false)
-                .set('entities', arrToImmutableMap(response, ArticleRecord))
+                .update('entities', entities => arrToImmutableMap(response, ArticleRecord).merge(entities))
 
         case LOAD_ARTICLE + START:
             return articles.setIn(['entities', payload.id, 'loading'], true)
 
+        case LOAD_ARTICLE + FAIL:
+            return articles.deleteIn(['entities', payload.id])
+
         case LOAD_ARTICLE + SUCCESS:
             return articles
                 .setIn(['entities', payload.id], new ArticleRecord(payload.response))
+
+        case LOAD_ARTICLE_COMMENTS + START:
+            return articles.setIn(['entities', payload.articleId, 'commentsLoading'], true)
+
+        case LOAD_ARTICLE_COMMENTS + SUCCESS:
+            return articles
+                .setIn(['entities', payload.articleId, 'commentsLoading'], false)
+                .setIn(['entities', payload.articleId, 'commentsLoaded'], true)
     }
 
     return articles
